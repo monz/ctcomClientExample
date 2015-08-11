@@ -39,8 +39,8 @@ try
         localProtocolVersion = request.getProtocolVersion();
         remoteProtocolVersion = ack.getProtocolVersion();
         if ~ isequal(localProtocolVersion, remoteProtocolVersion)
-            error(fprintf('Protocol versions did not match, local: %s remote: %s', ...
-                localProtocolVersion, remoteProtocolVersion));
+            fprintf('Protocol versions did not match, local: %s remote: %s', ...
+                localProtocolVersion, remoteProtocolVersion);
         end
         % connection established, wait for the server to send readData
         % message
