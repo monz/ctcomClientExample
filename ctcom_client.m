@@ -8,11 +8,19 @@ import ctcom.CtcomClient;
 
 %% configuration 
 
-ctmatDestination = './';
-host = '192.168.2.106';
-%host = 'localhost';
+ctmatDstDir = './';
+ctmatShareDir = '/mnt/linuxdata/tmp/ctmatfiles/';
+% host = '192.168.2.106';
+host = 'localhost';
 port = 4745;
 
+algorithm = 'mockup';
+fixedResult = 'niO';
+
+dataStructFields = {'header', 'channelInfo', 'xAxisInfo', 'partInfo', ...
+    'parts.engineInputs', 'parts.engineOutputs', 'windows', 'warnings'};
+
+counter = 0;
 %%
 
 disp('Starting CTCOM client');
@@ -22,10 +30,11 @@ try
 
     % prepare connection request
     request = ConnectMessage();
-    request.addToTestbenchRead('header');
-    request.addToTestbenchRead('partInfo');
-    request.addToTestbenchWrite('header');
-    request.addToTestbenchWrite('warnings');
+    % fill connect message
+    for n = 1:length(dataStructFields)
+        request.addToTestbenchRead(dataStructFields{n});
+        request.addToTestbenchWrite(dataStructFields{n});
+    end
     % send connection request
     client.sendConnectionRequest(request)
     % receive connection request acknowledgement message
@@ -51,19 +60,18 @@ try
                 disp('Received message was invalid');
                 continue;
             elseif message.getType() == MessageType.READ_DATA
-                % copy ctmat file from network share
+                % get file location from network share
                 ctmatSource = char(message.getLocation());
-                copyCtmat(ctmatSource, ctmatDestination)
                 % load received new data
                 [~,filename,ext] = fileparts(ctmatSource);
-                ctmatFile = [ctmatDestination, filesep, filename, ext];
-                ctmatData = load(ctmatFile,'-mat');
-                % handle data
-                % TODO: insert algorithm here
-                printData(ctmatData.outCtmat);
+                ctmatData = load(ctmatSource,'-mat');
+                % rate received ctmat data
+                ratedCtmatData = rateCtmatData(ctmatData.ctData, algorithm, fixedResult);
+                % save new ctmat data to network share
+                [ratedCtmatPath, counter] = saveCtmatFile(ratedCtmatData, ctmatShareDir, counter);
                 % return updated ctmat file
                 returnMessage = ReadDataMessage();
-                returnMessage.setLocation(message.getLocation());
+                returnMessage.setLocation(ratedCtmatPath);
                 client.sendMessage(returnMessage);
                 
             elseif message.getType() == MessageType.QUIT
