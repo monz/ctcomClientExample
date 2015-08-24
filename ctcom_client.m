@@ -17,6 +17,7 @@ host = 'localhost';
 port = 4745;
 logfilePattern = '/tmp/ctcom_logfile_%u.txt';
 append = false;
+fileLoglevel = Level.INFO;
 consoleLoglevel = Level.WARNING;
 
 algorithm = 'mockup';
@@ -35,6 +36,8 @@ if isempty(logHelper.getOutputFile) % have to check here, because of matlab weir
     log.config(sprintf('init logfile to "%s"', logfilePattern));
     logHelper.setOutputFile(logfilePattern, append);
 end
+% set file logger loglevel
+logHelper.setFileLoglevel(fileLoglevel);
 
 % set console logger loglevel
 logHelper.setConsoleLoglevel(consoleLoglevel);
@@ -117,8 +120,10 @@ try
 catch ME
     log.severe(sprintf('An error occurrred "%s"', ME.message));
     try
-        log.info('Try to send CTCOM quit message to the CTCOM serve');
-        client.quit('shit happens');
+        if exist('client', 'var')
+            log.info('Try to send CTCOM quit message to the CTCOM serve');
+            client.quit('shit happens');
+        end
     catch ME
         log.severe(sprintf('An error occurrred "%s"', ME.message));
     end
