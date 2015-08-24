@@ -15,8 +15,9 @@ ctmatShareDir = '/mnt/linuxdata/tmp/ctmatfiles/';
 % host = '192.168.2.106';
 host = 'localhost';
 port = 4745;
-logfile = '/tmp/ctcom_logfile.txt';
+logfilePattern = '/tmp/ctcom_logfile_%u.txt';
 append = false;
+consoleLoglevel = Level.WARNING;
 
 algorithm = 'mockup';
 fixedResult = 'iO';
@@ -31,12 +32,12 @@ log = LogHelper.getLogger();
 log.info('preparing CTCOM client start');
 % set output file for logger
 if isempty(logHelper.getOutputFile) % have to check here, because of matlab weirdness, after script restart, path ist still set
-    log.config(sprintf('init logfile to "%s"', logfile));
-    logHelper.setOutputFile(logfile, append);
+    log.config(sprintf('init logfile to "%s"', logfilePattern));
+    logHelper.setOutputFile(logfilePattern, append);
 end
 
 % set console logger loglevel
-logHelper.setConsoleLoglevel(Level.WARNING);
+logHelper.setConsoleLoglevel(consoleLoglevel);
 
 %% starting ctcom client
 log.info('Starting CTCOM client');
@@ -62,7 +63,8 @@ try
     % check if received message is valid
     if isempty(ack)
         log.warning('Received CTCOM connection acknowledge message was invalid');
-        % TODO: close TCP connection
+        % close TCP connection
+        client.close();
         error('Received message was invalid');
     elseif ack.getType() == MessageType.CONNECT
         log.info('Successfully received CTCOM acknowledge message');
