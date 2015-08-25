@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<clientConfig xmlns="http://www.thi.de/CTCOM/2014.01/client" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.thi.de/CTCOM/2014.01/client ctcom_client_config.xsd">
+
+	<ctcom>
+		<server>
+			<ip>127.0.0.1</ip>
+			<port>4745</port>
+		</server>
+		<testbenchRead>
+			<field>header</field>
+			<field>channelInfo</field>
+			<field>xAxisInfo</field>
+			<field>partInfo</field>
+			<field>parts.engineInputs</field>
+			<field>parts.engineOutputs</field>
+			<field>windows</field>
+			<field>warnings</field>
+		</testbenchRead>
+		<testbenchWrite>
+			<field>header</field>
+			<field>channelInfo</field>
+			<field>xAxisInfo</field>
+			<field>partInfo</field>
+			<field>parts.engineInputs</field>
+			<field>parts.engineOutputs</field>
+			<field>windows</field>
+			<field>warnings</field>
+		</testbenchWrite>
+		<ctmatNetworkPath>/mnt/linuxdata/tmp/ctmatfiles/</ctmatNetworkPath>
+		<ctmatLocalPath>./</ctmatLocalPath>
+	</ctcom>
+	<logging>
+		<logfilePattern>/tmp/ctcom_logfile_%u.txt</logfilePattern>
+		<appendLogfile>false</appendLogfile>
+		<loglevelFileLogging>INFO</loglevelFileLogging>
+		<loglevelConsoleLogging>WARNING</loglevelConsoleLogging>
+	</logging>
+	<algorithm>
+		<rateAlgorithm>mockup</rateAlgorithm>
+		<fixedResult>iO</fixedResult>
+	</algorithm>
+
+</clientConfig>

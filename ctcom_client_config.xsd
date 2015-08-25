@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.thi.de/CTCOM/2014.01/client" xmlns="http://www.thi.de/CTCOM/2014.01/client" elementFormDefault="qualified">
+
+  <xs:element name="clientConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ctcom" type="ctcomSettings"/>
+        <xs:element name="logging" type="loggingSettings"/>
+        <xs:element name="algorithm" type="algorithmSettings"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+<!-- separator !-->
+
+  <xs:complexType name="loggingSettings">
+    <xs:sequence>
+      <xs:element name="logfilePattern" type="xs:string"/>
+      <xs:element name="appendLogfile" type="xs:boolean" default="false"/>
+      <xs:element name="loglevelFileLogging" type="loglevels" minOccurs="0"/>
+      <xs:element name="loglevelConsoleLogging" type="loglevels" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="loglevels">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CONFIG"/>
+      <xs:enumeration value="INFO"/>
+      <xs:enumeration value="WARNING"/>
+      <xs:enumeration value="SEVERE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+<!-- separator !-->
+
+  <xs:complexType name="algorithmSettings">
+    <xs:sequence>
+      <xs:element name="rateAlgorithm">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="mockup"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="fixedResult">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="iO"/>
+            <xs:enumeration value="niO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+<!-- separator !-->
+
+  <xs:complexType name="ctcomSettings">
+    <xs:sequence>
+      <xs:element name="server" type="host"/>
+      <xs:element name="testbenchRead" type="examValues"/>
+      <xs:element name="testbenchWrite" type="examValues"/>
+      <xs:element name="ctmatNetworkPath" type="xs:string"/>
+      <xs:element name="ctmatLocalPath" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="host">
+    <xs:sequence>
+      <xs:element name="ip">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="([0-9]{1,3}\.){3}[0-9]"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="port">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="65535"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="examValues">
+    <xs:sequence>
+      <xs:element name="field" type="dataStructFields" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="dataStructFields">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="header"/>
+      <xs:enumeration value="channelInfo"/>
+      <xs:enumeration value="xAxisInfo"/>
+      <xs:enumeration value="partInfo"/>
+      <xs:enumeration value="parts.engineInputs"/>
+      <xs:enumeration value="parts.engineOutputs"/>
+      <xs:enumeration value="windows"/>
+      <xs:enumeration value="warnings"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
