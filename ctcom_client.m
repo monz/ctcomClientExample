@@ -9,22 +9,27 @@ import ctcom.CtcomClient;
 import ctcom.util.LogHelper;
 
 %% configuration 
+% TODO: validate xml config file with xsd schema
+configfile = 'ctcom_client_config.xml';
 
-ctmatDstDir = './';
-ctmatShareDir = '/mnt/linuxdata/tmp/ctmatfiles/';
-% host = '192.168.2.106';
-host = 'localhost';
-port = 4745;
-logfilePattern = '/tmp/ctcom_logfile_%u.txt';
-append = false;
-fileLoglevel = Level.INFO;
-consoleLoglevel = Level.WARNING;
+ctcomConfig = ConfigReader.read(configfile, 'ctcom');
+host = ctcomConfig.server.ip;
+port = str2double(ctcomConfig.server.port);
+ctmatNetworkPath = ctcomConfig.ctmatNetworkPath;
 
-algorithm = 'mockup';
-fixedResult = 'iO';
+loggingConfig = ConfigReader.read(configfile, 'logging');
+logfilePattern = loggingConfig.logfilePattern;
+append = strcmp('true', loggingConfig.appendLogfile);
+fileLoglevel = Level.parse(loggingConfig.loglevelFileLogging);
+consoleLoglevel = Level.parse(loggingConfig.loglevelConsoleLogging);
 
-dataStructFields = {'header', 'channelInfo', 'xAxisInfo', 'partInfo', ...
-    'parts.engineInputs', 'parts.engineOutputs', 'windows', 'warnings'};
+algorithmConfig = ConfigReader.read(configfile, 'algorithm');
+algorithm = algorithmConfig.rateAlgorithm;
+fixedResult = algorithmConfig.fixedResult;
+
+% for this example implementation test bench read and write contain the
+% same values
+dataStructFields = ctcomConfig.testbenchRead;
 
 counter = 0;
 %% prepare logger
@@ -103,7 +108,7 @@ try
                 ratedCtmatData = rateCtmatData(ctmatData.ctData, algorithm, fixedResult);
                 log.info('Save rated ctmat data');
                 % save new ctmat data to network share
-                [ratedCtmatPath, counter] = saveCtmatFile(ratedCtmatData, ctmatShareDir, counter);
+                [ratedCtmatPath, counter] = saveCtmatFile(ratedCtmatData, ctmatNetworkPath, counter);
                 log.info('Send new CTCOM readData message to server, inform about new CTMAT file');
                 % return updated ctmat file
                 returnMessage = ReadDataMessage();
