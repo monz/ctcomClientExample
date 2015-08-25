@@ -61,7 +61,6 @@
       <xs:element name="testbenchRead" type="examValues"/>
       <xs:element name="testbenchWrite" type="examValues"/>
       <xs:element name="ctmatNetworkPath" type="xs:string"/>
-      <xs:element name="ctmatLocalPath" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 
