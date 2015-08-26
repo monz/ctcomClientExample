@@ -27,7 +27,7 @@
 			<field>windows</field>
 			<field>warnings</field>
 		</testbenchWrite>
-		<ctmatNetworkPath>/mnt/linuxdata/tmp/ctmatfiles/</ctmatNetworkPath>
+		<ctmatNetworkPath>/mnt/linuxdata/tmp/ctmatfiles</ctmatNetworkPath>
 	</ctcom>
 	<logging>
 		<logfilePattern>/tmp/ctcom_logfile_%u.txt</logfilePattern>

@@ -12,7 +12,7 @@ function ctcom_client(configfile)
     ctcomConfig = ConfigReader.read(configfile, 'ctcom');
     host = ctcomConfig.server.ip;
     port = str2double(ctcomConfig.server.port);
-    ctmatNetworkPath = ctcomConfig.ctmatNetworkPath;
+    ctmatNetworkPath = fullfile(ctcomConfig.ctmatNetworkPath);
 
     loggingConfig = ConfigReader.read(configfile, 'logging');
     logfilePattern = loggingConfig.logfilePattern;
@@ -111,7 +111,6 @@ function ctcom_client(configfile)
 
                     log.info('Load CTMAT file from received location');
                     % load received new data
-                    [~,filename,ext] = fileparts(ctmatSource);
                     ctmatData = load(ctmatSource,'-mat');
 
                     log.info('Rate received ctmat data');
