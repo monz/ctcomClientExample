@@ -61,6 +61,7 @@
       <xs:element name="testbenchRead" type="examValues"/>
       <xs:element name="testbenchWrite" type="examValues"/>
       <xs:element name="ctmatNetworkPath" type="xs:string"/>
+      <xs:element name="readMsgTimeout" type="timeout"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -100,6 +101,13 @@
       <xs:enumeration value="parts.engineOutputs"/>
       <xs:enumeration value="windows"/>
       <xs:enumeration value="warnings"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="timeout">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="600"/>
     </xs:restriction>
   </xs:simpleType>
 

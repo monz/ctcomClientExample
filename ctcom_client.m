@@ -13,6 +13,7 @@ function ctcom_client(configfile)
     host = ctcomConfig.server.ip;
     port = str2double(ctcomConfig.server.port);
     ctmatNetworkPath = fullfile(ctcomConfig.ctmatNetworkPath);
+    readMsgTimeout = str2double(ctcomConfig.readMsgTimeout);
 
     loggingConfig = ConfigReader.read(configfile, 'logging');
     logfilePattern = loggingConfig.logfilePattern;
@@ -28,7 +29,9 @@ function ctcom_client(configfile)
     % same values
     dataStructFields = ctcomConfig.testbenchRead;
 
+    % static values
     counter = 0;
+    
     %% prepare logger
     logHelper = LogHelper.getInstance();
     log = LogHelper.getLogger();
@@ -65,7 +68,12 @@ function ctcom_client(configfile)
 
         log.info('Receive CTCOM connection acknowledge message');
         % receive connection request acknowledgement message
-        ack = client.getMessage();
+        try
+            ack = client.getMessage(readMsgTimeout);
+        catch ME
+            log.severe(sprintf('Reading CTCOM connection request acknowledgement message timed out: %s', ME.message));
+            return;
+        end
 
         % check if received message is valid
         if isempty(ack)
@@ -87,6 +95,23 @@ function ctcom_client(configfile)
                 log.warning('CTCOM protocol version did not match');
                 fprintf('Protocol versions did not match, local: %s remote: %s', ...
                     localProtocolVersion, remoteProtocolVersion);
+                
+                % receiving quit message from server
+                try
+                    message = client.getMessage(readMsgTimeout);
+                catch ME
+                    log.severe(sprintf('Reading CTCOM quit message timed out: %s', ME.message));
+                    return;
+                end
+                
+                if isempty(message)
+                    return;
+                elseif message.getType() == MessageType.QUIT
+                    log.info(sprintf('Received CTCOM quit message "%s"', message.getMessage()));
+                    disp(message.getMessage());
+                end
+                
+                return;
             end
 
             % connection established, wait for the server to send readData
@@ -95,7 +120,15 @@ function ctcom_client(configfile)
             while true
 
                 log.info('Receive next CTCOM message from the CTCOM server');
-                message = client.getMessage();
+                try
+                    message = client.getMessage(readMsgTimeout);
+                catch ME
+                    log.severe(sprintf('Reading CTCOM message string timed out: %s', ME.message));
+                    quitMessage = QuitMessage();
+                    quitMessage.setMessage('Closing connection due to read message timeout.');
+                    client.sendMessage(quitMessage);
+                    break;
+                end
 
                 % check if received message is valid
                 if isempty(message)
