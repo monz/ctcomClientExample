@@ -166,6 +166,9 @@ function ctcom_client(configfile)
                     fprintf('Quit: %s \n', char(message.getMessage()));
                     break;
 
+                else
+                    log.info('Received neither CTCOM readData nor quit message');
+                    continue;
                 end
             end
         end
