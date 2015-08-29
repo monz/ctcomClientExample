@@ -72,6 +72,8 @@ function ctcom_client(configfile)
             ack = client.getMessage(readMsgTimeout);
         catch ME
             log.severe(sprintf('Reading CTCOM connection request acknowledgement message timed out: %s', ME.message));
+            % close TCP connection
+            client.close();
             return;
         end
 
