@@ -125,10 +125,8 @@ function ctcom_client(configfile)
                 try
                     message = client.getMessage(readMsgTimeout);
                 catch ME
-                    log.severe(sprintf('Reading CTCOM message string timed out: %s', ME.message));
-                    quitMessage = QuitMessage();
-                    quitMessage.setMessage('Closing connection due to read message timeout.');
-                    client.sendMessage(quitMessage);
+                    log.severe(sprintf('Error while reading CTCOM message string: %s', ME.message));
+                    client.quit(sprintf('Closing connection due to read message failure: %s.', ME.message));
                     break;
                 end
 
